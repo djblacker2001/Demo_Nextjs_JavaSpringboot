@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Form, Input, Button, Card, Alert, Typography, Divider } from 'antd';
 import { UserOutlined, LockOutlined } from '@ant-design/icons';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/auth-context';
 
 const { Title, Text } = Typography;
 
@@ -16,28 +16,18 @@ interface LoginFormValues {
 export function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const router = useRouter();
   const [form] = Form.useForm();
+  const { login } = useAuth();
 
   const handleSubmit = async (values: LoginFormValues) => {
     setIsLoading(true);
     setError('');
 
     try {
-      // TODO: Kết nối với backend API
-      // const response = await fetch('/api/auth/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(values),
-      // });
-
-      // Giả lập đăng nhập
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      console.log('Login successful:', values);
-      router.push('/dashboard');
-    } catch (err) {
-      setError('Đăng nhập thất bại. Vui lòng thử lại.');
+      await login(values);
+      console.log('Login successful');
+    } catch (err: any) {
+      setError(err.message || 'Đăng nhập thất bại. Vui lòng thử lại.');
       console.error('Login error:', err);
     } finally {
       setIsLoading(false);

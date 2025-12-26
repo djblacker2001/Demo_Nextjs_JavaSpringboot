@@ -1,10 +1,10 @@
 'use client';
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Form, Input, Button, Card, Alert, Typography, Divider } from 'antd';
 import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons';
 import Link from 'next/link';
+import { useAuth } from '@/contexts/auth-context';
 
 const { Title, Text } = Typography;
 
@@ -18,28 +18,19 @@ interface RegisterFormValues {
 export function RegisterForm() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const router = useRouter();
   const [form] = Form.useForm();
+  const { register } = useAuth();
 
   const handleSubmit = async (values: RegisterFormValues) => {
     setIsLoading(true);
     setError('');
 
     try {
-      // TODO: Kết nối với backend API
-      // const response = await fetch('/api/auth/register', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ name: values.name, email: values.email, password: values.password }),
-      // });
-
-      // Giả lập đăng ký
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      console.log('Register successful:', { name: values.name, email: values.email });
-      router.push('/login');
-    } catch (err) {
-      setError('Đăng ký thất bại. Vui lòng thử lại.');
+      const { confirmPassword, ...registerData } = values;
+      await register(registerData);
+      console.log('Register successful');
+    } catch (err: any) {
+      setError(err.message || 'Đăng ký thất bại. Vui lòng thử lại.');
       console.error('Register error:', err);
     } finally {
       setIsLoading(false);
